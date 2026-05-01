@@ -221,27 +221,6 @@ The notebook generates the following plots automatically:
 
 ---
 
-##  Deployment
-
-### Option 1: HTML App (No installation needed)
-
-Open `imdb_sentiment_app.html` directly in any browser. Works offline, no server required.
-
-```bash
-# Just double-click the file, or:
-open imdb_sentiment_app.html
-```
-
-### Option 2: Streamlit App
-
-```bash
-pip install streamlit
-streamlit run app.py
-```
-
-
----
-
 ##  Bonus: Word2Vec
 
 In addition to BoW and TF-IDF, the notebook includes **Word2Vec** embeddings as a bonus feature extraction method.
