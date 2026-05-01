@@ -3,7 +3,16 @@
 > Comparing 10 Machine Learning Algorithms on the IMDB 50K Dataset
 
 ---
+<img width="733" height="902" alt="Screenshot 2026-05-02 013858" src="https://github.com/user-attachments/assets/c0b228e7-24bc-4975-80e9-32b4d6fdf956" />
 
+---
+<img width="702" height="860" alt="Screenshot 2026-05-02 014442" src="https://github.com/user-attachments/assets/45ca60f6-7368-45ca-b103-3b73441bfef2" />
+
+----
+
+<img width="423" height="845" alt="Screenshot 2026-05-02 014200" src="https://github.com/user-attachments/assets/26451413-6e82-4164-b281-6f0eb73e01ad" />
+
+---
 ## 📋 Table of Contents
 
 - [Project Overview](#project-overview)
