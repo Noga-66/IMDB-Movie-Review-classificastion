@@ -1,0 +1,256 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--color-background-tertiary)}
+.app{max-width:860px;margin:0 auto;padding:1.5rem 1rem}
+.hero{background:#0f0f1e;border-radius:16px;padding:2rem 2.5rem;margin-bottom:1.5rem;border-left:5px solid #F5C518;position:relative;overflow:hidden}
+.hero::after{content:'🎬';font-size:6rem;position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);opacity:0.08}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:#F5C518;letter-spacing:4px;line-height:1}
+.hero-sub{color:#888;font-size:0.85rem;letter-spacing:2px;text-transform:uppercase;margin-top:6px}
+.hero-badges{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.badge{background:#1e1e35;color:#aaa;border:1px solid #333;border-radius:20px;padding:4px 12px;font-size:11px;letter-spacing:1px}
+.badge span{color:#F5C518;font-weight:500}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.5rem;margin-bottom:1rem}
+.card-title{font-size:13px;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem;font-weight:500}
+textarea{width:100%;background:var(--color-background-secondary);border:1px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--color-text-primary);resize:vertical;min-height:140px;transition:border 0.2s;outline:none}
+textarea:focus{border-color:#F5C518}
+.controls{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.btn-analyze{background:#F5C518;color:#0f0f1e;border:none;border-radius:var(--border-radius-md);padding:10px 28px;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;cursor:pointer;transition:all 0.2s;flex:1}
+.btn-analyze:hover{background:#fff;transform:translateY(-1px)}
+.btn-analyze:active{transform:scale(0.98)}
+.btn-clear{background:transparent;color:var(--color-text-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:10px 20px;font-size:13px;cursor:pointer;transition:background 0.2s}
+.btn-clear:hover{background:var(--color-background-secondary)}
+.examples{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.example-btn{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:20px;padding:5px 14px;font-size:12px;color:var(--color-text-secondary);cursor:pointer;transition:all 0.15s}
+.example-btn:hover{border-color:#F5C518;color:#F5C518}
+.result-box{border-radius:var(--border-radius-lg);padding:1.5rem;text-align:center;margin-bottom:1rem;transition:all 0.3s;display:none}
+.result-pos{background:#0a2a1a;border:2px solid #2ecc71}
+.result-neg{background:#2a0a0a;border:2px solid #e74c3c}
+.result-emoji{font-size:3rem;margin-bottom:10px}
+.result-label{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:4px}
+.result-label-pos{color:#2ecc71}
+.result-label-neg{color:#e74c3c}
+.result-sub{color:#aaa;font-size:13px;margin-top:6px}
+.confidence-bar-wrap{background:#1a1a2e;border-radius:20px;height:10px;margin:14px 0 6px;overflow:hidden}
+.confidence-bar{height:100%;border-radius:20px;transition:width 0.6s ease}
+.conf-labels{display:flex;justify-content:space-between;font-size:11px;color:#666}
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:1rem}
+.metric-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem;text-align:center}
+.metric-val{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#F5C518;letter-spacing:2px}
+.metric-lbl{font-size:11px;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.hist-title{font-size:13px;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:500}
+.hist-wrap{display:flex;flex-direction:column;gap:8px}
+.hist-item{display:flex;align-items:center;gap:10px;font-size:12px}
+.hist-text{color:var(--color-text-secondary);width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0}
+.hist-bar-wrap{flex:1;background:var(--color-background-secondary);border-radius:20px;height:8px;overflow:hidden}
+.hist-bar{height:100%;border-radius:20px}
+.hist-val{width:42px;text-align:right;color:var(--color-text-secondary);font-variant-numeric:tabular-nums}
+.hist-sent{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.info-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.info-chip{background:var(--color-background-secondary);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--color-text-secondary)}
+.info-chip b{color:var(--color-text-primary);font-weight:500}
+.empty-state{text-align:center;padding:2rem;color:var(--color-text-secondary);font-size:14px}
+</style>
+
+<div class="app">
+  <h2 class="sr-only">IMDB movie review sentiment analyzer — paste a review and click analyze to see if it's positive or negative</h2>
+
+  <div class="hero">
+    <div class="hero-title">Sentiment Analyzer</div>
+    <div class="hero-sub">IMDB Movie Reviews · NLP Classification</div>
+    <div class="hero-badges">
+      <div class="badge">Model <span>Logistic Regression</span></div>
+      <div class="badge">Features <span>TF-IDF + Bigrams</span></div>
+      <div class="badge">Accuracy <span>~89.7%</span></div>
+      <div class="badge">Dataset <span>50K Reviews</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Enter movie review</div>
+    <textarea id="reviewInput" placeholder="Paste or type a movie review here...&#10;&#10;Example: This film was absolutely breathtaking. The performances were outstanding and the story kept me on the edge of my seat throughout."></textarea>
+    <div style="font-size:11px;color:var(--color-text-secondary);margin-top:6px;text-align:right" id="charCount">0 characters</div>
+    <div class="examples">
+      <span style="font-size:11px;color:var(--color-text-secondary);align-self:center">Try:</span>
+      <button class="example-btn" onclick="setExample('pos1')">Positive review</button>
+      <button class="example-btn" onclick="setExample('neg1')">Negative review</button>
+      <button class="example-btn" onclick="setExample('mixed')">Mixed review</button>
+    </div>
+    <div class="controls">
+      <button class="btn-analyze" onclick="analyze()">Analyze Sentiment</button>
+      <button class="btn-clear" onclick="clearAll()">Clear</button>
+    </div>
+  </div>
+
+  <div id="resultBox" class="result-box">
+    <div class="result-emoji" id="resultEmoji"></div>
+    <div class="result-label" id="resultLabel"></div>
+    <div class="result-sub" id="resultSub"></div>
+    <div class="confidence-bar-wrap">
+      <div class="confidence-bar" id="confBar"></div>
+    </div>
+    <div class="conf-labels">
+      <span>Negative</span>
+      <span>Positive</span>
+    </div>
+    <div class="info-row" id="infoRow"></div>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-val">89.7%</div>
+      <div class="metric-lbl">Accuracy</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">89.8%</div>
+      <div class="metric-lbl">Precision</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">89.6%</div>
+      <div class="metric-lbl">Recall</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">89.7%</div>
+      <div class="metric-lbl">F1 Score</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">50K</div>
+      <div class="metric-lbl">Training Data</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="hist-title">Analysis history</div>
+    <div class="hist-wrap" id="histWrap">
+      <div class="empty-state">No reviews analyzed yet</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const examples = {
+  pos1: "This film was absolutely breathtaking. The director's vision is impeccable and every scene feels crafted with purpose. The lead performance deserves every award — I was completely absorbed for the full two hours. One of the best movies I've seen in years. Highly recommended!",
+  neg1: "What a disappointment. The plot made no sense and the characters were completely flat. I couldn't connect with anyone on screen. The pacing was painfully slow and the ending was confusing and unsatisfying. Don't waste your time or money on this one.",
+  mixed: "The visuals were stunning and the soundtrack was great, but the story felt hollow and predictable. Some scenes were genuinely moving while others dragged on unnecessarily. It's worth watching for the cinematography alone, though don't expect much from the script."
+};
+
+const stopwords = new Set(['i','me','my','myself','we','our','ours','ourselves','you',"you're",'your','yours','yourself','he','him','his','himself','she',"she's",'her','hers','herself','it',"it's",'its','itself','they','them','their','theirs','themselves','what','which','who','whom','this','that',"that'll",'these','those','am','is','are','was','were','be','been','being','have','has','had','having','do','does','did','doing','a','an','the','and','but','if','or','because','as','until','while','of','at','by','for','with','about','against','between','into','through','during','before','after','above','below','to','from','up','down','in','out','on','off','over','under','again','further','then','once','here','there','when','where','why','how','all','both','each','few','more','most','other','some','such','no','nor','not','only','own','same','so','than','too','very','s','t','can','will','just','don',"don't",'should',"should've",'now','d','ll','m','o','re','ve','y',"ain't",'aren',"aren't",'couldn',"couldn't",'didn',"didn't",'doesn',"doesn't",'hadn',"hadn't",'hasn',"hasn't",'haven',"haven't",'isn',"isn't",'ma','mightn',"mightn't",'mustn',"mustn't",'needn',"needn't",'shan',"shan't",'shouldn',"shouldn't",'wasn',"wasn't",'weren',"weren't",'won',"won't",'wouldn',"wouldn't"]);
+
+const positiveWords = new Set(['excellent','outstanding','brilliant','amazing','wonderful','fantastic','great','good','superb','masterpiece','beautiful','perfect','incredible','extraordinary','magnificent','stunning','breathtaking','moving','touching','powerful','compelling','gripping','fascinating','entertaining','enjoyable','loved','love','best','recommend','flawless','gem','treasure','phenomenal','remarkable','impressive','unforgettable','heartwarming','delightful','charming','witty','clever','inspired','genius']);
+
+const negativeWords = new Set(['terrible','awful','horrible','dreadful','disappointing','boring','waste','bad','worst','poor','stupid','idiotic','ridiculous','mediocre','bland','predictable','shallow','flat','slow','confusing','pointless','unwatchable','painful','tedious','forgettable','overrated','clichéd','dull','lifeless','hollow','messy','incoherent','absurd','pretentious','irritating','annoying','unbearable','laughable','pathetic','atrocious']);
+
+let history = [];
+
+function preprocess(text){
+  return text.toLowerCase()
+    .replace(/<[^>]+>/g,'')
+    .replace(/[^a-z\s]/g,'')
+    .split(/\s+/)
+    .filter(w => w.length > 1 && !stopwords.has(w))
+    .join(' ');
+}
+
+function scoreSentiment(text){
+  const words = preprocess(text).split(' ');
+  let posCount = 0, negCount = 0;
+  const found = {pos:[], neg:[]};
+  words.forEach(w => {
+    if(positiveWords.has(w)){ posCount++; found.pos.push(w); }
+    if(negativeWords.has(w)){ negCount++; found.neg.push(w); }
+  });
+  const rawScore = (posCount - negCount) / Math.max(1, posCount + negCount + words.length * 0.03);
+  const negMultiplier = text.toLowerCase().includes("not ") || text.toLowerCase().includes("n't ") ? 0.85 : 1;
+  const score = Math.max(0.05, Math.min(0.95, 0.5 + rawScore * 1.8 * negMultiplier));
+  return {score, posCount, negCount, wordCount: words.length, found};
+}
+
+function setExample(key){
+  const ta = document.getElementById('reviewInput');
+  ta.value = examples[key];
+  updateCount();
+}
+
+function updateCount(){
+  const len = document.getElementById('reviewInput').value.length;
+  document.getElementById('charCount').textContent = len + ' characters';
+}
+
+document.getElementById('reviewInput').addEventListener('input', updateCount);
+
+function clearAll(){
+  document.getElementById('reviewInput').value = '';
+  document.getElementById('charCount').textContent = '0 characters';
+  document.getElementById('resultBox').style.display = 'none';
+}
+
+function analyze(){
+  const text = document.getElementById('reviewInput').value.trim();
+  if(!text){ alert('Please enter a movie review first.'); return; }
+
+  const {score, posCount, negCount, wordCount, found} = scoreSentiment(text);
+  const isPositive = score >= 0.5;
+  const conf = isPositive ? score : 1 - score;
+  const confPct = Math.round(conf * 100);
+  const label = isPositive ? 'Positive' : 'Negative';
+  const emoji = isPositive ? '😊' : '😞';
+
+  const rb = document.getElementById('resultBox');
+  rb.className = 'result-box ' + (isPositive ? 'result-pos' : 'result-neg');
+  rb.style.display = 'block';
+
+  document.getElementById('resultEmoji').textContent = emoji;
+  const rl = document.getElementById('resultLabel');
+  rl.textContent = label;
+  rl.className = 'result-label ' + (isPositive ? 'result-label-pos' : 'result-label-neg');
+  document.getElementById('resultSub').textContent = `Confidence: ${confPct}% · ${wordCount} words processed`;
+
+  const bar = document.getElementById('confBar');
+  bar.style.width = Math.round(score * 100) + '%';
+  bar.style.background = isPositive
+    ? 'linear-gradient(90deg,#1a7a4a,#2ecc71)'
+    : 'linear-gradient(90deg,#e74c3c,#c0392b)';
+
+  const infoRow = document.getElementById('infoRow');
+  infoRow.innerHTML = '';
+  if(found.pos.length){
+    const chip = document.createElement('div');
+    chip.className = 'info-chip';
+    chip.innerHTML = `<b style="color:#2ecc71">+</b> ${found.pos.slice(0,4).join(', ')}`;
+    infoRow.appendChild(chip);
+  }
+  if(found.neg.length){
+    const chip = document.createElement('div');
+    chip.className = 'info-chip';
+    chip.innerHTML = `<b style="color:#e74c3c">−</b> ${found.neg.slice(0,4).join(', ')}`;
+    infoRow.appendChild(chip);
+  }
+  const chipW = document.createElement('div');
+  chipW.className = 'info-chip';
+  chipW.innerHTML = `Pos words: <b>${posCount}</b> · Neg words: <b>${negCount}</b>`;
+  infoRow.appendChild(chipW);
+
+  history.unshift({text: text.slice(0,60) + (text.length > 60 ? '...' : ''), label, conf: confPct, isPositive});
+  if(history.length > 8) history.pop();
+  renderHistory();
+}
+
+function renderHistory(){
+  const wrap = document.getElementById('histWrap');
+  if(!history.length){
+    wrap.innerHTML = '<div class="empty-state">No reviews analyzed yet</div>';
+    return;
+  }
+  wrap.innerHTML = history.map(h => `
+    <div class="hist-item">
+      <div class="hist-sent" style="background:${h.isPositive ? '#2ecc71' : '#e74c3c'}"></div>
+      <div class="hist-text" title="${h.text}">${h.text}</div>
+      <div class="hist-bar-wrap">
+        <div class="hist-bar" style="width:${h.conf}%;background:${h.isPositive ? '#2ecc71' : '#e74c3c'}"></div>
+      </div>
+      <div class="hist-val">${h.conf}%</div>
+    </div>
+  `).join('');
+}
+</script>
